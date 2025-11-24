@@ -224,6 +224,16 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     return urlData.publicUrl;
   }
 
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user);
+    });
+
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user || null);
+    })
+  })
+
   return (
     <StoreContext.Provider
       value={{
