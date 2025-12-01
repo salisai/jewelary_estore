@@ -1,19 +1,21 @@
-import React, { useState } from 'react';
-import { X, Sparkles, Send } from 'lucide-react';
-import { useStore } from '../context/StoreContext';
-import { getProductRecommendations } from '../services/geminiService';
-import { Product } from '../types';
+'use client';
+
+import { useState } from "react";
+import { X, Sparkles, Send } from "lucide-react";
+import { useStore } from "@/context/StoreContext";
+import type { Product } from "@/types";
 
 interface AiStylistProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const AiStylist: React.FC<AiStylistProps> = ({ isOpen, onClose }) => {
+const AiStylist = ({ isOpen, onClose }: AiStylistProps) => {
   const { products, addToCart } = useStore();
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<{ products: Product[], reasoning: string } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<{ products: Product[]; reasoning: string } | null>(null);
 
   if (!isOpen) return null;
 
@@ -22,13 +24,34 @@ const AiStylist: React.FC<AiStylistProps> = ({ isOpen, onClose }) => {
     if (!query.trim()) return;
 
     setLoading(true);
+    setError(null);
     setResult(null);
 
-    const { recommendedIds, reasoning } = await getProductRecommendations(query, products);
-    
-    const matchedProducts = products.filter(p => recommendedIds.includes(p.id));
-    setResult({ products: matchedProducts, reasoning });
-    setLoading(false);
+    try {
+      const res = await fetch("/api/ai-stylist", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ query })
+      });
+
+      if (!res.ok) {
+        throw new Error("Unable to reach stylist");
+      }
+
+      const payload = await res.json();
+      const matchedProducts = products.filter((p) => payload.recommendedIds?.includes(p.id));
+      setResult({
+        products: matchedProducts,
+        reasoning: payload.reasoning
+      });
+    } catch (err) {
+      console.error(err);
+      setError("Our stylist is paused right now. Please try again soon.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -63,7 +86,11 @@ const AiStylist: React.FC<AiStylistProps> = ({ isOpen, onClose }) => {
             </div>
           )}
 
-          {result && (
+          {error && (
+            <p className="text-center text-sm text-red-500">{error}</p>
+          )}
+
+          {result && !error && (
             <div className="flex-1 overflow-y-auto">
               <div className="mb-6 p-4 bg-gray-50 rounded-sm">
                 <p className="italic text-gray-700 leading-relaxed font-serif">"{result.reasoning}"</p>

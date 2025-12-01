@@ -11,8 +11,9 @@ export interface Product {
   price: number;
   category: ProductCategory;
   description: string;
-  image: string;
+  image: string | File | null;
   stock: number;
+  created_at?: string;
 }
 
 export interface CartItem extends Product {
@@ -22,8 +23,8 @@ export interface CartItem extends Product {
 export interface User {
   id: string;
   email: string;
-  isAdmin: boolean;
   name: string;
+  isAdmin: boolean;
 }
 
 export interface Order {
@@ -32,7 +33,8 @@ export interface Order {
   items: CartItem[];
   total: number;
   date: string;
-  status: 'pending' | 'shipped' | 'delivered';
+  status: 'pending' | 'paid' | 'shipped' | 'delivered' | 'failed';
+  stripeSessionId?: string;
 }
 
 export interface AiRecommendationResponse {

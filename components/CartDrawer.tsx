@@ -1,11 +1,12 @@
-import React from 'react';
-import { useStore } from '../context/StoreContext';
-import { X, Minus, Plus } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+'use client';
 
-const CartDrawer: React.FC = () => {
+import { useStore } from "@/context/StoreContext";
+import { X, Minus, Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+const CartDrawer = () => {
   const { isCartOpen, toggleCart, cart, updateQuantity, removeFromCart } = useStore();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
@@ -40,42 +41,39 @@ const CartDrawer: React.FC = () => {
               </button>
             </div>
           ) : (
-            cart.map((item) => (
-              <div key={item.id} className="flex gap-4">
-                <img src={item.image} alt={item.name} className="w-20 h-20 object-cover bg-gray-50" />
-                <div className="flex-1">
-                  <div className="flex justify-between items-start">
-                    <h3 className="font-medium">{item.name}</h3>
-                    <p className="font-medium">${item.price}</p>
-                  </div>
-                  <p className="text-sm text-gray-500 capitalize">{item.category}</p>
-                  
-                  <div className="flex items-center justify-between mt-4">
-                    <div className="flex items-center border border-gray-200">
-                      <button 
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className="p-1 hover:bg-gray-50"
-                      >
-                        <Minus size={14} />
-                      </button>
-                      <span className="px-3 text-sm">{item.quantity}</span>
-                      <button 
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="p-1 hover:bg-gray-50"
-                      >
-                        <Plus size={14} />
+            cart.map((item) => {
+              const imageSrc =
+                typeof item.image === "string"
+                  ? item.image
+                  : "https://dummyimage.com/80x80/efefef/000000.png&text=+";
+              return (
+                <div key={item.id} className="flex gap-4">
+                  <img src={imageSrc} alt={item.name} className="w-20 h-20 object-cover bg-gray-50" />
+                  <div className="flex-1">
+                    <div className="flex justify-between items-start">
+                      <h3 className="font-medium">{item.name}</h3>
+                      <p className="font-medium">${item.price}</p>
+                    </div>
+                    <p className="text-sm text-gray-500 capitalize">{item.category}</p>
+
+                    <div className="flex items-center justify-between mt-4">
+                      <div className="flex items-center border border-gray-200">
+                        <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="p-1 hover:bg-gray-50">
+                          <Minus size={14} />
+                        </button>
+                        <span className="px-3 text-sm">{item.quantity}</span>
+                        <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="p-1 hover:bg-gray-50">
+                          <Plus size={14} />
+                        </button>
+                      </div>
+                      <button onClick={() => removeFromCart(item.id)} className="text-xs text-gray-400 hover:text-black underline">
+                        Remove
                       </button>
                     </div>
-                    <button 
-                      onClick={() => removeFromCart(item.id)}
-                      className="text-xs text-gray-400 hover:text-black underline"
-                    >
-                      Remove
-                    </button>
                   </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
 
@@ -89,7 +87,7 @@ const CartDrawer: React.FC = () => {
             <button
               onClick={() => {
                 toggleCart();
-                navigate('/checkout');
+                router.push("/checkout");
               }}
               className="w-full bg-black text-white py-4 text-sm font-medium tracking-wide hover:bg-gray-800 transition-colors uppercase"
             >
