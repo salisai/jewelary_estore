@@ -16,6 +16,7 @@ export const getBearerToken = (req: NextRequest) => {
   return token?.trim() || null;
 };
 
+//confirm user from the incoming request.
 export const requireUser = async (req: NextRequest): Promise<AuthenticatedUser> => {
   const token = getBearerToken(req);
   if (!token) {
@@ -52,6 +53,7 @@ export const isAdminUser = async (userId: string) => {
   return Boolean(data);
 };
 
+//first autheticate user.
 export const requireAdmin = async (req: NextRequest): Promise<AuthenticatedUser> => {
   const user = await requireUser(req);
   const admin = await isAdminUser(user.id);

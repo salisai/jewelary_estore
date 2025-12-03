@@ -149,6 +149,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem("lumiere_cart", JSON.stringify(cart));
   }, [cart]);
 
+
   const login = async (email: string, password?: string, isSignUp?: boolean) => {
     if (!password) {
       return { error: { message: "Password required" } };
@@ -165,6 +166,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     return { error };
   };
 
+  
   const logout = async () => {
     await supabase.auth.signOut();
     setUser(null);

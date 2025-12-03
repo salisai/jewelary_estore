@@ -3,10 +3,12 @@ import { Product } from "@/types";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY});
 
+
 export const getProductRecommendations = async (
   query: string,
   availableProducts: Product[]
 ): Promise<{ recommendedIds: string[]; reasoning: string }> => {
+  
   if (!process.env.GEMINI_API_KEY) {
     //defensive coding
     console.warn("No API Key found. Returning mock response.");
@@ -51,7 +53,7 @@ export const getProductRecommendations = async (
             },
             reasoning: {
               type: Type.STRING,
-              description: "A short, elegant paragraph explaining the choice to the customer."
+              description: "A short, elegant, precise paragraph in warm tone, explaining the choice to the customer."
             }
           },
           required: ["recommendedProductIds", "reasoning"]
@@ -79,12 +81,3 @@ export const getProductRecommendations = async (
 
 
 
-
-
-
-//todos
-//AI image enhancement - different mockups, shapes.
-//AI product description.
-//AI upselling and cross-selling.
-//AI email marketing - write abandoned cart reminders, new collection newsletters.
-//AI photo Try-on
