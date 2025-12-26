@@ -47,3 +47,7 @@ Thumbs.db
 
 # Local configs
 *.local
+
+.env*
+.next
+.vscode 

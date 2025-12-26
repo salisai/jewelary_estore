@@ -1,4 +1,4 @@
-// File: D:\downloads\jewelary_app\app\layout.tsx
+// File: /home/sayed-ali-shah/Desktop/jewelary_estore/app/layout.tsx
 import * as entry from '../../../app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

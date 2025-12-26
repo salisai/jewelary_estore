@@ -1,38 +1,47 @@
 'use client';
 
-import { useEffect } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
 import { useStore } from "@/context/StoreContext";
+import { Check } from "lucide-react";
 
-const SuccessPage = () => {
-  const searchParams = useSearchParams();
+const SuccessContent = () => {
   const router = useRouter();
-  const { refreshOrders, clearCart } = useStore();
+  const { clearCart } = useStore();
+  const searchParams = useSearchParams();
+  // Assuming searchParams might be used for session_id etc in real app, preventing build error
 
   useEffect(() => {
-    refreshOrders();
     clearCart();
-  }, [refreshOrders, clearCart]);
-
-  const sessionId = searchParams.get("session_id");
+  }, [clearCart]);
 
   return (
-    <div className="h-[80vh] flex flex-col items-center justify-center text-center px-4 space-y-6">
-      <div className="space-y-4">
-        <h1 className="text-4xl font-serif">Thank You.</h1>
-        <p className="text-gray-600">
-          Your order is being crafted. A confirmation email has been sent{sessionId ? ` (ref: ${sessionId})` : ""}.
-        </p>
+    <div className="min-h-[60vh] flex flex-col items-center justify-center px-6 animate-in fade-in duration-700">
+      <div className="w-16 h-16 bg-neutral-950 rounded-full flex items-center justify-center mb-8">
+        <Check className="text-white" size={32} />
       </div>
+      <h1 className="text-3xl md:text-5xl font-light tracking-tight text-neutral-950 mb-6 text-center">
+        Order Confirmed
+      </h1>
+      <p className="text-neutral-500 text-[15px] mb-10 max-w-md text-center leading-relaxed">
+        Thank you for your purchase. We have received your order and one of our artisans will begin preparing it shortly.
+      </p>
       <button
         onClick={() => router.push("/")}
-        className="bg-black text-white px-8 py-3 uppercase tracking-widest text-sm hover:bg-gray-800 transition-colors"
+        className="bg-neutral-950 text-white px-10 py-4 text-[13px] font-medium tracking-widest uppercase hover:bg-neutral-800 transition-colors"
       >
-        Return Home
+        Continue Shopping
       </button>
     </div>
   );
 };
 
-export default SuccessPage;
+const SuccessPage = () => {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-neutral-400 text-[13px] uppercase tracking-widest">Processing...</div>}>
+      <SuccessContent />
+    </Suspense>
+  );
+};
 
+export default SuccessPage;

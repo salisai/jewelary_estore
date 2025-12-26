@@ -5,10 +5,6 @@
 :root {
   --background: 0 0% 100%;
   --foreground: 0 0% 3.9%;
-  --card: 0 0% 100%;
-  --card-foreground: 0 0% 3.9%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 0 0% 3.9%;
   --primary: 0 0% 3.9%;
   --primary-foreground: 0 0% 98%;
   --secondary: 0 0% 96.1%;
@@ -22,16 +18,42 @@
   --border: 0 0% 89.8%;
   --input: 0 0% 89.8%;
   --ring: 0 0% 3.9%;
-  --radius: 0.5rem;
+  --radius: 0rem;
 }
 
 body {
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background-color: #fff;
   color: #0a0a0a;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Luxury Utility Classes */
+.tracking-tight-headings {
+  letter-spacing: -0.025em;
+}
+
+.tracking-wide-labels {
+  letter-spacing: 0.05em;
 }
 
 * {
   border-color: hsl(var(--border));
 }
 
+/* Prevent background color change on browser autofill */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-text-fill-color: inherit;
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset;
+  transition: background-color 5000s ease-in-out 0s;
+  background-color: transparent !important;
+}

@@ -1,8 +1,10 @@
 'use client';
 
 import { useParams } from "next/navigation";
+import Image from "next/image";
 import { Check, Truck, ShieldCheck } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
+import Link from 'next/link';
 
 const ProductDetailPage = () => {
   const params = useParams<{ id: string }>();
@@ -10,41 +12,67 @@ const ProductDetailPage = () => {
   const product = products.find((p) => p.id === params?.id);
 
   if (!product) {
-    return <div className="text-center py-20">Product not found.</div>;
+    return <div className="text-center py-40 text-neutral-500">Product not found.</div>;
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-12 animate-in slide-in-from-bottom-4 duration-500">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20">
-        <div className="bg-gray-50 aspect-[4/5]">
-          <img src={product.image as string} alt={product.name} className="w-full h-full object-cover" />
+    <div className="max-w-7xl mx-auto px-6 py-20 md:py-32 animate-in fade-in duration-700">
+      <div className="flex flex-col lg:flex-row gap-12 lg:gap-24">
+
+        {/* Product Image */}
+        <div className="w-full lg:w-3/5">
+          <div className="aspect-[3/4] bg-neutral-50 relative overflow-hidden">
+            <Image
+              src={product.image as string}
+              alt={product.name}
+              fill
+              className="object-cover"
+            />
+          </div>
         </div>
 
-        <div className="flex flex-col justify-center">
-          <div className="mb-2 text-sm text-gray-500 uppercase tracking-widest">{product.category}</div>
-          <h1 className="text-4xl md:text-5xl font-serif mb-6 text-gray-900">{product.name}</h1>
-          <p className="text-2xl font-light mb-8">${product.price}</p>
+        {/* Product Info */}
+        <div className="w-full lg:w-2/5 flex flex-col justify-center pt-8 lg:pt-0">
+          <nav className="flex items-center gap-2 text-[11px] uppercase tracking-widest text-neutral-400 mb-8">
+            <Link href="/shop" className="hover:text-neutral-950 transition-colors">Shop</Link>
+            <span>/</span>
+            <Link href={`/shop?cat=${product.category}`} className="hover:text-neutral-950 transition-colors">{product.category}</Link>
+          </nav>
 
-          <p className="text-gray-600 leading-relaxed mb-10 max-w-md">{product.description}</p>
+          <h1 className="text-3xl md:text-5xl font-light tracking-tight text-neutral-950 mb-6 leading-tight">
+            {product.name}
+          </h1>
+          <p className="text-2xl font-medium tracking-tight text-neutral-950 mb-10">
+            ${product.price}
+          </p>
+
+          <div className="space-y-6 mb-12">
+            <p className="text-[14px] leading-relaxed text-neutral-600 font-light">
+              {product.description}
+            </p>
+            <p className="text-[14px] leading-relaxed text-neutral-600 font-light">
+              Handcrafted with attention to detail, this piece embodies timeless elegance and modern sophistication. Perfect for any occasion.
+            </p>
+          </div>
 
           <button
             onClick={() => addToCart(product)}
-            className="w-full md:w-auto bg-black text-white px-12 py-4 text-sm font-medium tracking-widest uppercase hover:bg-gray-800 transition-colors mb-10"
+            className="w-full bg-neutral-950 text-white py-4 text-[13px] font-medium tracking-widest uppercase hover:bg-neutral-800 transition-colors mb-12"
           >
             Add to Bag
           </button>
 
-          <div className="grid grid-cols-1 gap-4 text-sm text-gray-600 border-t border-gray-100 pt-8">
-            <div className="flex items-center gap-3">
-              <Truck size={18} />
-              <span>Free worldwide shipping on orders over $200</span>
+          <div className="border-t border-neutral-100 pt-8 space-y-4">
+            <div className="flex items-center gap-4 text-[13px] text-neutral-600">
+              <Truck size={16} strokeWidth={1.5} />
+              <span>Free worldwide shipping</span>
             </div>
-            <div className="flex items-center gap-3">
-              <ShieldCheck size={18} />
+            <div className="flex items-center gap-4 text-[13px] text-neutral-600">
+              <ShieldCheck size={16} strokeWidth={1.5} />
               <span>2-year warranty included</span>
             </div>
-            <div className="flex items-center gap-3">
-              <Check size={18} />
+            <div className="flex items-center gap-4 text-[13px] text-neutral-600">
+              <Check size={16} strokeWidth={1.5} />
               <span>Ethically sourced materials</span>
             </div>
           </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Lock } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
@@ -17,9 +18,12 @@ const CheckoutPage = () => {
   if (cart.length === 0) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center">
-        <p className="text-xl mb-4">Your cart is empty.</p>
-        <button onClick={() => router.push("/shop")} className="text-black underline">
-          Back to Shop
+        <p className="text-lg text-neutral-500 mb-6 font-light">Your bag is empty.</p>
+        <button
+          onClick={() => router.push("/shop")}
+          className="text-[13px] tracking-widest uppercase border-b border-neutral-950 pb-1 hover:text-neutral-600 hover:border-neutral-600 transition-colors"
+        >
+          Return to Shop
         </button>
       </div>
     );
@@ -72,30 +76,31 @@ const CheckoutPage = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-12">
-      <h1 className="text-3xl font-serif mb-10">Checkout</h1>
+    <div className="max-w-6xl mx-auto px-6 py-20 md:py-32 animate-in fade-in duration-700">
+      <h1 className="text-3xl md:text-4xl font-light tracking-tight text-neutral-950 mb-16 text-center">Secure Checkout</h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
+        {/* Left Column: Form */}
         <div>
-          <form onSubmit={handlePayment} className="space-y-8">
+          <form onSubmit={handlePayment} className="space-y-12">
             <section>
-              <h2 className="text-lg font-medium mb-4">Shipping Information</h2>
-              <div className="grid grid-cols-2 gap-4">
-                <input type="text" placeholder="First Name" required className="border border-gray-300 p-3 w-full" />
-                <input type="text" placeholder="Last Name" required className="border border-gray-300 p-3 w-full" />
-                <input type="text" placeholder="Address" required className="col-span-2 border border-gray-300 p-3 w-full" />
-                <input type="text" placeholder="City" required className="border border-gray-300 p-3 w-full" />
-                <input type="text" placeholder="Zip Code" required className="border border-gray-300 p-3 w-full" />
+              <h2 className="text-[13px] font-medium uppercase tracking-widest text-neutral-500 mb-6">Shipping Details</h2>
+              <div className="grid grid-cols-2 gap-5">
+                <input type="text" placeholder="First Name" required className="border border-neutral-200 p-4 w-full text-sm text-neutral-950 placeholder:text-neutral-400 focus:border-neutral-950 focus:outline-none transition-colors rounded-none" />
+                <input type="text" placeholder="Last Name" required className="border border-neutral-200 p-4 w-full text-sm text-neutral-950 placeholder:text-neutral-400 focus:border-neutral-950 focus:outline-none transition-colors rounded-none" />
+                <input type="text" placeholder="Address" required className="col-span-2 border border-neutral-200 p-4 w-full text-sm text-neutral-950 placeholder:text-neutral-400 focus:border-neutral-950 focus:outline-none transition-colors rounded-none" />
+                <input type="text" placeholder="City" required className="border border-neutral-200 p-4 w-full text-sm text-neutral-950 placeholder:text-neutral-400 focus:border-neutral-950 focus:outline-none transition-colors rounded-none" />
+                <input type="text" placeholder="Zip Code" required className="border border-neutral-200 p-4 w-full text-sm text-neutral-950 placeholder:text-neutral-400 focus:border-neutral-950 focus:outline-none transition-colors rounded-none" />
               </div>
             </section>
 
             <section>
-              <h2 className="text-lg font-medium mb-4 flex items-center gap-2">
-                Payment Method <Lock size={14} className="text-green-600" />
+              <h2 className="text-[13px] font-medium uppercase tracking-widest text-neutral-500 mb-6 flex items-center gap-2">
+                Payment <Lock size={12} className="text-neutral-400" />
               </h2>
-              <div className="bg-gray-50 p-6 rounded-sm border border-gray-200 space-y-4">
-                <p className="text-sm text-gray-600">
-                  Payments are securely handled by Stripe. You&apos;ll be redirected to complete your purchase.
+              <div className="bg-neutral-50 p-8 border border-neutral-100">
+                <p className="text-[13px] leading-relaxed text-neutral-600">
+                  All transactions are secure and encrypted. You will be redirected to Stripe to complete your purchase safely.
                 </p>
               </div>
             </section>
@@ -103,40 +108,45 @@ const CheckoutPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-black text-white py-4 font-medium uppercase tracking-widest hover:bg-gray-800 transition-colors disabled:opacity-50"
+              className="w-full bg-neutral-950 text-white py-4 text-[13px] font-medium tracking-widest uppercase hover:bg-neutral-800 transition-colors disabled:opacity-50"
             >
               {loading ? "Processing..." : `Pay $${total.toFixed(2)}`}
             </button>
           </form>
         </div>
 
-        <div className="bg-gray-50 p-8 h-fit">
-          <h2 className="text-lg font-medium mb-6">Order Summary</h2>
-          <div className="space-y-4 mb-6">
+        {/* Right Column: Order Summary */}
+        <div className="bg-neutral-50 p-10 h-fit border border-neutral-100">
+          <h2 className="text-[13px] font-medium uppercase tracking-widest text-neutral-500 mb-8">Order Summary</h2>
+          <div className="space-y-6 mb-8">
             {cart.map((item) => (
-              <div key={item.id} className="flex gap-4">
-                <img src={item.image as string} alt={item.name} className="w-16 h-16 object-cover bg-white" />
-                <div className="flex-1">
-                  <p className="font-medium text-sm">{item.name}</p>
-                  <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+              <div key={item.id} className="flex gap-6">
+                <div className="w-16 h-20 bg-white relative shrink-0">
+                  <Image src={item.image as string} alt={item.name} width={64} height={80} className="object-cover" />
                 </div>
-                <p className="text-sm font-medium">${(item.price * item.quantity).toFixed(2)}</p>
+                <div className="flex-1 py-1 flex flex-col justify-between">
+                  <div className="flex justify-between items-start gap-4">
+                    <p className="font-medium text-[13px] text-neutral-950">{item.name}</p>
+                    <p className="text-[13px] font-medium text-neutral-950">${(item.price * item.quantity).toFixed(2)}</p>
+                  </div>
+                  <p className="text-[11px] text-neutral-500">Qty: {item.quantity}</p>
+                </div>
               </div>
             ))}
           </div>
 
-          <div className="border-t border-gray-200 pt-4 space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Subtotal</span>
-              <span>${total.toFixed(2)}</span>
+          <div className="border-t border-neutral-200 pt-6 space-y-3">
+            <div className="flex justify-between text-[13px]">
+              <span className="text-neutral-600">Subtotal</span>
+              <span className="text-neutral-950">${total.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Shipping</span>
-              <span>Free</span>
+            <div className="flex justify-between text-[13px]">
+              <span className="text-neutral-600">Shipping</span>
+              <span className="text-neutral-950">Free</span>
             </div>
-            <div className="flex justify-between text-lg font-medium pt-2">
-              <span>Total</span>
-              <span>${total.toFixed(2)}</span>
+            <div className="flex justify-between text-[15px] font-medium pt-4 border-t border-neutral-200 mt-4">
+              <span className="text-neutral-950">Total</span>
+              <span className="text-neutral-950">${total.toFixed(2)}</span>
             </div>
           </div>
         </div>

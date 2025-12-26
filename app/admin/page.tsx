@@ -1,10 +1,12 @@
 'use client';
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Trash2 } from "lucide-react";
+import { Trash2, Mail, MessageSquare, Eye } from "lucide-react";
 import { ResponsiveContainer, AreaChart, Area, Tooltip, CartesianGrid, XAxis } from "recharts";
 import { useStore } from "@/context/StoreContext";
+import { supabaseBrowser } from "@/lib/supabase/client";
 import { ProductCategory, type Product } from "@/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -21,7 +23,9 @@ const AdminPage = () => {
   const { user, products, orders, addProduct, deleteProduct, uploadImage } = useStore();
   const [isSaving, setIsSaving] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [activeTab, setActiveTab] = useState<"overview" | "catalog" | "orders">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "catalog" | "orders" | "messages">("overview");
+  const [messages, setMessages] = useState<any[]>([]);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [newProduct, setNewProduct] = useState<Omit<Product, "id">>({
     name: "",
     price: 0,
@@ -36,6 +40,45 @@ const AdminPage = () => {
       router.replace("/");
     }
   }, [user, router]);
+
+  const fetchMessages = async () => {
+    setIsLoadingMessages(true);
+    const { data, error } = await supabaseBrowser
+      .from('contact_messages')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (!error && data) {
+      setMessages(data);
+    }
+    setIsLoadingMessages(false);
+  };
+
+  useEffect(() => {
+    if (activeTab === "messages") {
+      fetchMessages();
+    }
+  }, [activeTab]);
+
+  const markAsRead = async (id: string) => {
+    const { error } = await supabaseBrowser
+      .from('contact_messages')
+      .update({ status: 'read' })
+      .eq('id', id);
+    if (!error) {
+      setMessages(messages.map(m => m.id === id ? { ...m, status: 'read' } : m));
+    }
+  };
+
+  const deleteMessage = async (id: string) => {
+    const { error } = await supabaseBrowser
+      .from('contact_messages')
+      .delete()
+      .eq('id', id);
+    if (!error) {
+      setMessages(messages.filter(m => m.id !== id));
+    }
+  };
 
   if (!user) {
     return (
@@ -105,6 +148,7 @@ const AdminPage = () => {
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="catalog">Catalog</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
+            <TabsTrigger value="messages">Messages</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
@@ -299,7 +343,9 @@ const AdminPage = () => {
                     <TableRow key={product.id}>
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          <img src={product.image as string} alt={product.name} className="h-12 w-12 object-cover" />
+                          <div className="relative h-12 w-12">
+                            <Image src={product.image as string} alt={product.name} width={48} height={48} className="object-cover" />
+                          </div>
                           <div>
                             <p className="font-medium">{product.name}</p>
                             <p className="text-xs text-gray-500">{product.category}</p>
@@ -327,40 +373,76 @@ const AdminPage = () => {
         </div>
       )}
 
-      {activeTab === "orders" && (
+      {activeTab === "messages" && (
         <Card>
           <CardHeader>
-            <CardTitle>Orders</CardTitle>
-            <CardDescription>Live feed from Supabase</CardDescription>
+            <CardTitle>Customer Messages</CardTitle>
+            <CardDescription>Direct inquiries from the contact form</CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Order ID</TableHead>
+                  <TableHead>Customer</TableHead>
+                  <TableHead>Subject</TableHead>
                   <TableHead>Date</TableHead>
-                  <TableHead>Total</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {orders.length === 0 && (
+                {isLoadingMessages ? (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center text-gray-500">
-                      No orders found.
+                    <TableCell colSpan={5} className="text-center py-10">
+                      <div className="flex items-center justify-center gap-2 text-gray-400">
+                        <Loader2 className="animate-spin" size={16} />
+                        Loading messages...
+                      </div>
                     </TableCell>
                   </TableRow>
+                ) : messages.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-10 text-gray-500">
+                      No messages received yet.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  messages.map((msg) => (
+                    <TableRow key={msg.id} className={msg.status === 'unread' ? 'bg-neutral-50/50' : ''}>
+                      <TableCell>
+                        <div className="space-y-0.5">
+                          <p className="font-medium text-sm">{msg.name}</p>
+                          <p className="text-xs text-gray-500">{msg.email}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="max-w-[200px] truncate text-sm" title={msg.message}>
+                          {msg.subject}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {new Date(msg.created_at).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={msg.status === 'unread' ? 'secondary' : 'outline'}>
+                          {msg.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          {msg.status === 'unread' && (
+                            <Button size="sm" variant="ghost" onClick={() => markAsRead(msg.id)} title="Mark as read">
+                              <Eye size={16} className="text-gray-400" />
+                            </Button>
+                          )}
+                          <Button size="sm" variant="ghost" onClick={() => deleteMessage(msg.id)} className="text-red-500 hover:text-red-600">
+                            <Trash2 size={16} />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
                 )}
-                {orders.map((order) => (
-                  <TableRow key={order.id}>
-                    <TableCell className="font-mono text-xs">#{order.id}</TableCell>
-                    <TableCell>{new Date(order.date).toLocaleDateString()}</TableCell>
-                    <TableCell>${order.total.toFixed(2)}</TableCell>
-                    <TableCell>
-                      <Badge variant={order.status === "paid" ? "success" : "secondary"}>{order.status}</Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
               </TableBody>
             </Table>
           </CardContent>

@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, Suspense } from "react";
 import { useStore } from "@/context/StoreContext";
 import { ProductCategory, type Product } from "@/types";
+import ProductCard from "@/components/ProductCard";
 
-const ShopPage = () => {
+const ShopContent = () => {
   const { products } = useStore();
   const searchParams = useSearchParams();
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
@@ -23,14 +24,17 @@ const ShopPage = () => {
   const categories = useMemo(() => Object.values(ProductCategory), []);
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-12 animate-in fade-in">
-      <div className="flex flex-col md:flex-row justify-between items-baseline mb-12">
-        <h1 className="text-4xl font-serif">{categoryFilter || "All Jewelry"}</h1>
+    <>
+      {/* Header & Filters */}
+      <div className="flex flex-col items-center mb-20 space-y-8">
+        <h1 className="text-3xl md:text-5xl font-light tracking-tight text-neutral-950">
+          {categoryFilter || "All Collection"}
+        </h1>
 
-        <div className="flex gap-6 text-sm mt-4 md:mt-0 overflow-x-auto pb-2">
+        <div className="flex flex-wrap justify-center gap-8 text-[13px] tracking-widest uppercase">
           <Link
             href="/shop"
-            className={`whitespace-nowrap ${!categoryFilter ? "text-black font-medium border-b border-black" : "text-gray-500 hover:text-black"}`}
+            className={`${!categoryFilter ? "text-neutral-950 border-b border-neutral-950 pb-1" : "text-neutral-400 hover:text-neutral-950 transition-colors"}`}
           >
             All
           </Link>
@@ -38,7 +42,7 @@ const ShopPage = () => {
             <Link
               key={cat}
               href={`/shop?cat=${cat}`}
-              className={`whitespace-nowrap ${categoryFilter === cat ? "text-black font-medium border-b border-black" : "text-gray-500 hover:text-black"}`}
+              className={`${categoryFilter === cat ? "text-neutral-950 border-b border-neutral-950 pb-1" : "text-neutral-400 hover:text-neutral-950 transition-colors"}`}
             >
               {cat}
             </Link>
@@ -46,40 +50,30 @@ const ShopPage = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12">
-        {filteredProducts.map((product) => (
-          <Link key={product.id} href={`/product/${product.id}`} className="group block">
-            <div className="aspect-[4/5] overflow-hidden bg-gray-50 mb-4 relative">
-              <img
-                src={product.image as string}
-                alt={product.name}
-                className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
-              />
-              {product.stock < 5 && (
-                <span className="absolute top-2 right-2 bg-white/80 backdrop-blur text-xs px-2 py-1 uppercase tracking-wider">
-                  Low Stock
-                </span>
-              )}
-            </div>
-            <div className="flex justify-between items-start">
-              <div>
-                <h3 className="font-serif text-lg leading-none mb-1 group-hover:text-gray-600 transition-colors">
-                  {product.name}
-                </h3>
-                <p className="text-xs text-gray-500 uppercase tracking-wider">{product.category}</p>
-              </div>
-              <span className="text-sm font-medium">${product.price}</span>
-            </div>
-          </Link>
+      {/* Product Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-16">
+        {filteredProducts.map((product, index) => (
+          <ProductCard key={product.id} product={product} index={index} />
         ))}
       </div>
 
       {filteredProducts.length === 0 && (
-        <div className="text-center py-20 text-gray-500">No products found in this category.</div>
+        <div className="text-center py-32 text-neutral-400 font-light">
+          No pieces found in this category.
+        </div>
       )}
+    </>
+  );
+};
+
+const ShopPage = () => {
+  return (
+    <div className="max-w-7xl mx-auto px-6 py-24 md:py-32 min-h-screen">
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-neutral-400 text-[13px] uppercase tracking-widest">Loading Collection...</div>}>
+        <ShopContent />
+      </Suspense>
     </div>
   );
 };
 
 export default ShopPage;
-
