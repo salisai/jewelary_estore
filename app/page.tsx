@@ -149,7 +149,7 @@ const HomePage = () => {
               We believe luxury shouldn't cost the earth. Every piece is crafted using 100% recycled metals and ethically sourced stones.
               Our design philosophy centers on longevity—creating pieces you will cherish for a lifetime.
             </p>
-            <Link href="#" className="inline-flex items-center gap-2 text-[13px] font-medium tracking-widest uppercase border-b border-neutral-950 pb-1 hover:text-neutral-600 hover:border-neutral-600 transition-colors">
+            <Link href="/about" className="inline-flex items-center gap-2 text-[13px] font-medium tracking-widest uppercase border-b border-neutral-950 pb-1 hover:text-neutral-600 hover:border-neutral-600 transition-colors">
               Read Our Story <ArrowRight size={14} />
             </Link>
           </motion.div>

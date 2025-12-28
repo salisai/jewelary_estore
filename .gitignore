@@ -51,3 +51,7 @@ Thumbs.db
 .env*
 .next
 .vscode 
+
+.next 
+.github 
+.env
