@@ -8,7 +8,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useStore } from "@/context/StoreContext";
 import CartDrawer from "./CartDrawer";
 import AiStylist from "./AiStylist";
-import { UrlObject } from "url";
 
 const Navbar = () => {
   const { cart, toggleCart, user, logout } = useStore();
@@ -34,14 +33,13 @@ const Navbar = () => {
     }
   }, [isMobileMenuOpen]);
 
-  const navLinks: { name: string; href: string | UrlObject }[] = [
+  const navLinks: { name: string; href: string }[] = [
     { name: "All", href: "/shop" },
-    { name: "Rings", href: { pathname: "/shop", query: { cat: "Rings" } } },
-    { name: "Necklaces", href: { pathname: "/shop", query: { cat: "Necklaces" } } },
+    { name: "Rings", href: "/shop?cat=Rings" },
+    { name: "Necklaces", href: "/shop?cat=Necklaces" },
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
   ];
-
 
 
 
@@ -65,7 +63,7 @@ const Navbar = () => {
             {navLinks.map((link) => (
               <Link
                 key={link.name}
-                href={link.href}
+                href={link.href as any}
                 className="text-[11px] tracking-[0.5em] uppercase text-neutral-500 hover:text-neutral-950 transition-colors font-medium"
               >
                 {link.name}
@@ -153,7 +151,7 @@ const Navbar = () => {
                   transition={{ delay: 0.1 + idx * 0.1, duration: 0.8 }}
                 >
                   <Link
-                    href={item.href}
+                    href={item.href as any}
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="text-3xl font-light tracking-[0.2em] uppercase hover:text-neutral-500 transition-colors duration-500"
                   >
