@@ -14,7 +14,7 @@ const CartDrawer = () => {
   if (!isCartOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end">
+    <div className="fixed inset-0 z-[70] flex justify-end">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-neutral-900/30 backdrop-blur-sm transition-opacity"
@@ -22,7 +22,7 @@ const CartDrawer = () => {
       />
 
       {/* Drawer */}
-      <div className="relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-500 ease-[0.22,1,0.36,1]">
+      <div className="z-60 relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-500 ease-[0.22,1,0.36,1]">
         <div className="p-8 flex items-center justify-between border-b border-neutral-100">
           <h2 className="text-lg md:hidden font-medium tracking-wide text-neutral-950 uppercase">Your Bag ({cart.length})</h2>
           <button onClick={toggleCart} className="text-neutral-500 hover:text-neutral-950 transition-colors">

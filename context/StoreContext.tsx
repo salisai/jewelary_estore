@@ -177,6 +177,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   const addToCart = (product: Product) => {
     setCart((prev) => {
       const existing = prev.find((item) => item.id === product.id);
+      
       if (existing) {
         return prev.map((item) =>
           item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item

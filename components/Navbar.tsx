@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useStore } from "@/context/StoreContext";
 import CartDrawer from "./CartDrawer";
 import AiStylist from "./AiStylist";
+import { UrlObject } from "url";
 
 const Navbar = () => {
   const { cart, toggleCart, user, logout } = useStore();
@@ -33,13 +34,16 @@ const Navbar = () => {
     }
   }, [isMobileMenuOpen]);
 
-  const navLinks = [
+  const navLinks: { name: string; href: string | UrlObject }[] = [
     { name: "All", href: "/shop" },
-    { name: "Rings", href: "/shop?cat=Rings" },
-    { name: "Necklaces", href: "/shop?cat=Necklaces" },
+    { name: "Rings", href: { pathname: "/shop", query: { cat: "Rings" } } },
+    { name: "Necklaces", href: { pathname: "/shop", query: { cat: "Necklaces" } } },
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
   ];
+
+
+
 
   return (
     <>
