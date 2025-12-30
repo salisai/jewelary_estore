@@ -24,7 +24,7 @@ const CartDrawer = () => {
       {/* Drawer */}
       <div className="relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-500 ease-[0.22,1,0.36,1]">
         <div className="p-8 flex items-center justify-between border-b border-neutral-100">
-          <h2 className="text-lg font-medium tracking-wide text-neutral-950 uppercase">Your Bag ({cart.length})</h2>
+          <h2 className="text-lg md:hidden font-medium tracking-wide text-neutral-950 uppercase">Your Bag ({cart.length})</h2>
           <button onClick={toggleCart} className="text-neutral-500 hover:text-neutral-950 transition-colors">
             <X size={20} strokeWidth={1.5} />
           </button>

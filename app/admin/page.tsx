@@ -17,6 +17,24 @@ import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog"
+
+
+type ContactMessage = {
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  status: 'unread' | 'read';
+  created_at: string;
+}
 
 const AdminPage = () => {
   const router = useRouter();
@@ -24,7 +42,7 @@ const AdminPage = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [activeTab, setActiveTab] = useState<"overview" | "catalog" | "orders" | "messages">("overview");
-  const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [newProduct, setNewProduct] = useState<Omit<Product, "id">>({
     name: "",
@@ -34,6 +52,8 @@ const AdminPage = () => {
     image: null,
     stock: 0
   });
+  const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null);
+
 
   useEffect(() => {
     if (user && !user.isAdmin) {
@@ -373,6 +393,7 @@ const AdminPage = () => {
         </div>
       )}
 
+      {/* Messages Tab */}
       {activeTab === "messages" && (
         <Card>
           <CardHeader>
@@ -385,6 +406,7 @@ const AdminPage = () => {
                 <TableRow>
                   <TableHead>Customer</TableHead>
                   <TableHead>Subject</TableHead>
+                  <TableHead>Content</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
@@ -395,7 +417,7 @@ const AdminPage = () => {
                   <TableRow>
                     <TableCell colSpan={5} className="text-center py-10">
                       <div className="flex items-center justify-center gap-2 text-gray-400">
-                        <Loader2 className="animate-spin" size={16} />
+                        {/* <Loader2 className="animate-spin" size={16} /> */}
                         Loading messages...
                       </div>
                     </TableCell>
@@ -420,6 +442,20 @@ const AdminPage = () => {
                           {msg.subject}
                         </div>
                       </TableCell>
+
+                      <TableCell>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => setSelectedMessage(msg)}
+                          title="View message"
+                        >
+                          <Eye size={16} />
+                        </Button>
+
+                        
+                      </TableCell>
+
                       <TableCell className="text-sm">
                         {new Date(msg.created_at).toLocaleDateString()}
                       </TableCell>
@@ -445,6 +481,29 @@ const AdminPage = () => {
                 )}
               </TableBody>
             </Table>
+
+            {/* Message Dialog – rendered once */}
+            {selectedMessage && (
+            <Dialog open={true} onOpenChange={() => setSelectedMessage(null)}>
+              <DialogContent className="max-w-lg">
+                <DialogHeader>
+                  <DialogTitle>{selectedMessage.subject}</DialogTitle>
+                  <DialogDescription>
+                    From {selectedMessage.name} ({selectedMessage.email})
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="mt-4 whitespace-pre-wrap text-sm leading-relaxed">
+                  {selectedMessage.message}
+                </div>
+
+                <div className="mt-4 text-xs text-gray-400">
+                  Received on {new Date(selectedMessage.created_at).toLocaleString()}
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
+
           </CardContent>
         </Card>
       )}
