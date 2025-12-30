@@ -4,12 +4,14 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 
 export default function AboutPage() {
+    /* tailwind-ignore */
     const fadeIn = {
         initial: { opacity: 0, y: 30 },
         animate: { opacity: 1, y: 0 },
-        transition: { duration: 1, ease: [0.22, 1, 0.36, 1] }
+        transition: { duration: 1, ease: [0.22, 1, 0.36, 1] as const }
     };
 
+    /* tailwind-ignore */
     const staggerContainer = {
         animate: {
             transition: {
